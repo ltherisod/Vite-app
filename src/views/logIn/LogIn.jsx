@@ -1,30 +1,39 @@
 import React, { useState } from 'react'
 import { useUser } from '../../context/UserContext'
 import {useNavigate} from 'react-router-dom'
+import { formValidaciones } from '../../utils/formValidaciones'
+import { useForm } from 'react-hook-form'
+import FormInput from '../../components/FormInput/FormInput'
+import FormErrors from '../../components/Errors/FormErrors'
+
 
 const LogIn = () => {
     const {logInUser}= useUser()
-    const [email, setEmail]= useState()
-    const [password, setPassword]= useState()
     const navigate = useNavigate()
+    const {required, minLength } = formValidaciones()
+    const {register, handleSubmit, setError, formState:{errors} }=useForm()
     
-    const handleSubmit = async (e) => {
-        e.preventDefault()
+    const onSubmit = async ({email, password}) => {
         try{
             await logInUser(email, password)
             navigate('/')
         }catch(error){
-            console.log(error)
-            alert('ese email o contraseña erroneos')
-        }
+            const {code, message} = errorsFirebase(error)
+            setError(code, {message})
+        } 
+        
     }
   return (
     <div>
         <h1>Log In</h1>
-        <form onSubmit={handleSubmit}>
-            <input type="email" placeholder='ingrese su e-mail' onChange={(e)=>setEmail(e.target.value)}/>
-            <input type='password' placeholder='contraseña' onChange={(e)=>setPassword(e.target.value)}/>
-            <input type='submit' />
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <FormInput type="email" placeholder='ingrese su e-mail' {...register('email', {required})}>
+                <FormErrors error={errors.email}/>
+            </FormInput>
+            <FormInput type='password' placeholder='contraseña' {...register('password',{minLength} )}>
+                <FormErrors error={errors.password}/>
+            </FormInput>
+            <button type="submit">Log in</button>
         </form>
     </div>
   )

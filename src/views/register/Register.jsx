@@ -2,22 +2,24 @@ import React  from 'react'
 import { useUser } from '../../context/UserContext'
 import {useNavigate} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { erroresFirebase } from '../../utils/erroresFirebase'
+import { errorsFirebase } from '../../utils/FirebaseError'
 import FormErrors from '../../components/Errors/FormErrors'
+import { formValidaciones } from '../../utils/formValidaciones'
+import FormInput from '../../components/FormInput/FormInput'
 
 const Register = () => {
     const {registerUser }= useUser()
     const navigate = useNavigate()
     const {register, handleSubmit, getValues, setError, formState:{errors} }=useForm()
+    const {required, minLength, validateEquals} = formValidaciones()
 
     const onSubmit = async ({email, password}) => {
         try{
             await registerUser(email, password)
             navigate('/')
         }catch(error){
-                setError('firebase',{
-                    message: erroresFirebase(error.code) 
-            })
+            const {code, message} = errorsFirebase(error)
+            setError(code, {message})
         }
     }
 
@@ -26,21 +28,18 @@ const Register = () => {
         <h1>Registrar</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <FormErrors error={errors.firebase}/>
-            <input type="email" placeholder='ingrese su e-mail' {...register('email', {required:{
-                value:true,
-                message:'Por favor ingrese su email'}})}/>
+            <FormInput type="email" placeholder='ingrese su e-mail' {...register('email', {required})}>
+                <FormErrors error={errors.email}/>
+            </FormInput>
+            <FormInput type='password' placeholder='contraseña' {...register('password',{minLength} )}>
                 <FormErrors error={errors.password}/>
-            <input type='password' placeholder='contraseña' {...register('password', {minLength:{
-                value:6,
-                message:'Minimo 6 caracteres'
-            }})} />
-            <FormErrors error={errors.repassword}/>
-            <input type='password' placeholder='contraseña' {...register('repassword', {
-                validate:{
-                    equals:value => value === getValues('password') || 'Las contraseñas deben ser iguales' ,
-                }
-            })} />
-            <input type='submit' />
+            </FormInput>
+            <FormInput type='password' placeholder='contraseña' {...register('repassword', {
+                validate:validateEquals(getValues)
+            })}>
+                <FormErrors error={errors.repassword}/>
+            </FormInput>
+            <button type="submit">Register</button>
         </form>
     </div>
 
