@@ -7,6 +7,7 @@ import Home from './views/home/Home'
 import LogIn from './views/logIn/LogIn'
 import Auth from './components/Auth/Auth'
 import Register from './views/register/Register'
+import LayoutContainerForm from './components/Layout/LayoutContainerForm/LayoutContainerForm'
 
 function App() {
 const{ user }= useUser()
@@ -23,8 +24,10 @@ if(user === false){
             <Home/>
           </Auth>
         }/>
-        <Route path='/login' element={<LogIn/>}/>
-        <Route path='/register' element={<Register/>}/>
+        <Route path='/' element={<LayoutContainerForm/>}>
+          <Route path='/login' element={<LogIn/>}/>
+          <Route path='/register' element={<Register/>}/>
+        </Route>
       </Routes>
     </BrowserRouter>
   )

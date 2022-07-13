@@ -7,9 +7,9 @@ export const formValidaciones = (getValues) => {
                 value:6,
                 message:'Minimo 6 caracteres'
             },
-            validateEquals(getValues){
+            validateEquals(value){
                 return{
-                    equals:value => value === getValues('password') || 'Las contraseñas deben ser iguales' ,
+                    equals:v => v === value || 'Las contraseñas deben ser iguales' ,
                 }
             }
     }

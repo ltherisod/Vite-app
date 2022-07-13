@@ -6,6 +6,8 @@ import { errorsFirebase } from '../../utils/FirebaseError'
 import FormErrors from '../../components/Errors/FormErrors'
 import { formValidaciones } from '../../utils/formValidaciones'
 import FormInput from '../../components/FormInput/FormInput'
+import Title from '../../components/Title/Title'
+import Button from '../../components/Button/Button'
 
 const Register = () => {
     const {registerUser }= useUser()
@@ -25,21 +27,21 @@ const Register = () => {
 
   return (
     <div>
-        <h1>Registrar</h1>
+        <Title text="Crea tu cuenta"/>
         <form onSubmit={handleSubmit(onSubmit)}>
             <FormErrors error={errors.firebase}/>
-            <FormInput type="email" placeholder='ingrese su e-mail' {...register('email', {required})}>
+            <FormInput type="email" placeholder='email@email.com' {...register('email', {required})} label="Ingrese su e-mail" error={errors.email}>
                 <FormErrors error={errors.email}/>
             </FormInput>
-            <FormInput type='password' placeholder='contraseña' {...register('password',{minLength} )}>
+            <FormInput type='password' placeholder='contraseña' {...register('password',{minLength} )} label="Ingrese su contraseña" error={errors.password}>
                 <FormErrors error={errors.password}/>
             </FormInput>
             <FormInput type='password' placeholder='contraseña' {...register('repassword', {
-                validate:validateEquals(getValues)
-            })}>
+                validate:validateEquals(getValues("password"))
+            })} label="Repita su contraseña" error={errors.repassword}>
                 <FormErrors error={errors.repassword}/>
             </FormInput>
-            <button type="submit">Register</button>
+            <Button type="submit" text="Registrarse"/>
         </form>
     </div>
 
